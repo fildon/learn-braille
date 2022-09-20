@@ -1,40 +1,8 @@
-import { buildStorage } from "./storage";
-
-jest.spyOn(console, "info").mockImplementation(() => {
-	// deliberate no-op to silence during tests
-});
-jest.spyOn(console, "error").mockImplementation(() => {
-	// deliberate no-op to silence during tests
-});
-
-test("initial build overwrites bad stored values", () => {
-	const mockGetItem = jest.fn((key) => {
-		// Missing value
-		if (key === "box1") return null;
-		// Unparseable
-		if (key === "box2") return "This will not parse (]";
-		// Valid parseable value... but not an array
-		if (key === "box3") return "2";
-		// Valid parseable array... but does not contain a card
-		if (key === "box4") return "[{}]";
-		return "";
-	}) as jest.MockedFunction<Storage["getItem"]>;
-	const mockSetItem = jest.fn();
-
-	buildStorage({
-		getItem: mockGetItem,
-		setItem: mockSetItem,
-	});
-
-	expect(mockSetItem).toHaveBeenCalledWith("step", "1");
-	expect(mockSetItem).toHaveBeenCalledWith("box1", "[]");
-	expect(mockSetItem).toHaveBeenCalledWith("box2", "[]");
-	expect(mockSetItem).toHaveBeenCalledWith("box3", "[]");
-	expect(mockSetItem).toHaveBeenCalledWith("box4", "[]");
-	expect(mockSetItem).toHaveBeenCalledWith("box5", "[]");
-	expect(mockSetItem).toHaveBeenCalledWith("box6", "[]");
-	expect(mockSetItem).toHaveBeenCalledWith("box7", "[]");
-});
+import {
+	buildStorage,
+	createBoxValidator,
+	isStorageStateValid,
+} from "./storage";
 
 test("getStep retrieves step from local storage", () => {
 	// Simulate missing step key
@@ -47,13 +15,9 @@ test("getStep retrieves step from local storage", () => {
 		setItem: jest.fn(),
 	});
 
-	// These calls are made during validation as part of building
-	expect(mockGetItem).toHaveBeenCalledTimes(8);
-
 	const stepWhenMissingkey = storage.getStep();
 
-	// Just one more is made during the call to `getStep`
-	expect(mockGetItem).toHaveBeenCalledTimes(8 + 1);
+	expect(mockGetItem).toHaveBeenCalledTimes(1);
 	expect(mockGetItem).toHaveBeenCalledWith("step");
 	expect(stepWhenMissingkey).toBe(1);
 
@@ -62,7 +26,7 @@ test("getStep retrieves step from local storage", () => {
 
 	const stepWhenSet = storage.getStep();
 
-	expect(mockGetItem).toHaveBeenCalledTimes(8 + 2);
+	expect(mockGetItem).toHaveBeenCalledTimes(2);
 	expect(stepWhenSet).toBe(2);
 });
 
@@ -96,7 +60,7 @@ test("getCurrentCard checks later boxes if current is empty", () => {
 	const mockGetItem = jest.fn((key) => {
 		if (key === "step") return "1";
 		if (key === "box1") return "[]";
-		if (key === "box2") return null;
+		if (key === "box2") return "[]";
 		return mockState;
 	}) as jest.MockedFunction<Storage["getItem"]>;
 	const mockSetItem = jest.fn() as jest.MockedFunction<Storage["setItem"]>;
@@ -115,29 +79,32 @@ test("getCurrentCard checks later boxes if current is empty", () => {
 	expect(mockSetItem).toHaveBeenCalledWith("step", "4");
 });
 
-test("getCurrentCard recovers from broken boxes", () => {
-	const mockGetItem = jest.fn() as jest.MockedFunction<Storage["getItem"]>;
-	const mockSetItem = jest.fn();
+test("isStoredBoxValid rejects null boxes", () => {
+	const mockGetItem = jest.fn().mockReturnValue(null);
+	const boxValidator = createBoxValidator(mockGetItem);
+	expect(boxValidator("box1")).toBe(false);
+});
 
-	const storage = buildStorage({
-		getItem: mockGetItem,
-		setItem: mockSetItem,
-	});
+test("isStoredBoxValid rejects unparseable boxes", () => {
+	const mockGetItem = jest.fn().mockReturnValue("unparseable(]");
+	const boxValidator = createBoxValidator(mockGetItem);
+	expect(boxValidator("box1")).toBe(false);
+});
 
-	const mockBox = JSON.stringify([
-		{
-			id: "1",
-			front: "front",
-			back: "back",
-			learningState: 1,
-		},
-	]);
-	mockGetItem.mockImplementation((key) => {
-		if (key === "box1") return '["not a card in here"]';
+test("isStorageStateValid rejects if one box is bad", () => {
+	const mockGetItem = jest.fn((key) => {
+		if (key === "step") return "1";
+	}) as jest.MockedFunction<Storage["getItem"]>;
+
+	expect(isStorageStateValid(mockGetItem)).toBe(false);
+});
+
+test("isStorageStateValid rejects if there are missing cards", () => {
+	const mockBox = "[]";
+	const mockGetItem = jest.fn((key) => {
+		if (key === "step") return "1";
 		return mockBox;
-	});
+	}) as jest.MockedFunction<Storage["getItem"]>;
 
-	storage.getCurrentCard();
-
-	expect(mockSetItem).toHaveBeenCalledWith("box1", "[]");
+	expect(isStorageStateValid(mockGetItem)).toBe(false);
 });

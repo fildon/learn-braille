@@ -1,12 +1,11 @@
 import { getBoxKey } from "./boxSequencer";
 
-// TODO
-const initialCards = [
-	["⠁", "A"],
-	["⠃", "B"],
-	["⠉", "C"],
-	["⠙", "D"],
-	["⠑", "E"],
+const initialCards: Array<Card> = [
+	{ id: "1", front: "⠁", back: "A", learningState: "ready" },
+	{ id: "2", front: "⠃", back: "B", learningState: "ready" },
+	{ id: "3", front: "⠉", back: "C", learningState: "ready" },
+	{ id: "4", front: "⠙", back: "D", learningState: "ready" },
+	{ id: "5", front: "⠑", back: "E", learningState: "ready" },
 ];
 
 const isObj = (obj: unknown): obj is Record<PropertyKey, unknown> =>
@@ -17,53 +16,69 @@ const isCard = (obj: unknown): obj is Card =>
 	typeof obj.id === "string" &&
 	typeof obj.front === "string" &&
 	typeof obj.back === "string" &&
-	Array.from({ length: 7 })
-		.map((_, i) => i + 1)
-		.includes(obj.learningState as number);
+	[
+		"ready",
+		...Array.from({ length: 7 }).map((_, i) => i + 1),
+		"retired",
+	].includes(obj.learningState as string | number);
 
 const isBox = (obj: unknown): obj is Array<Card> =>
 	isObj(obj) && Array.isArray(obj) && obj.every((member) => isCard(member));
 
-const validateCurrentStorageKeys = ({
-	getItem,
-	setItem,
-}: Pick<Storage, "getItem" | "setItem">) => {
+export const createBoxValidator =
+	(getItem: Storage["getItem"]) => (boxKey: string) => {
+		const storedBox = getItem(boxKey);
+		if (storedBox === null) return false;
+		try {
+			const parsedBox: unknown = JSON.parse(storedBox);
+			return isBox(parsedBox);
+		} catch (_) {
+			return false;
+		}
+	};
+
+export const isStorageStateValid = (getItem: Storage["getItem"]) => {
 	const storedStep = parseInt(getItem("step") ?? "");
-	if (Number.isNaN(storedStep)) setItem("step", "1");
-	Array.from({ length: 7 })
-		.map((_, i) => `box${i + 1}`)
-		.forEach((boxKey) => {
-			const storedBox = getItem(boxKey);
-			if (storedBox === null) {
-				setItem(boxKey, "[]");
-				return;
-			}
-			try {
-				const parsedBox: unknown = JSON.parse(storedBox);
-				if (!Array.isArray(parsedBox))
-					throw new Error("Non-array in storage key");
-				parsedBox.forEach((card) => {
-					if (!isCard(card))
-						throw new Error("Unrecognised contents of storage key");
-				});
-			} catch (_) {
-				console.error(
-					`Could not parse contents of localStorage key: ${boxKey}.`
-				);
-				console.info(
-					`We will recover by resetting to empty array. You may have lost progress... sorry!`
-				);
-				setItem(boxKey, "[]");
-			}
-		});
+	if (Number.isNaN(storedStep)) return false;
+
+	const allBoxKeys = [
+		"ready",
+		...Array.from({ length: 7 }).map((_, i) => `box${i + 1}`),
+		"retired",
+	];
+
+	const allBoxesValid = allBoxKeys.every(createBoxValidator(getItem));
+	if (!allBoxesValid) return false;
+
+	// There is an 'as' and non-null assertion in here, but it is safe so long as we trust the 'allBoxesValid' check above
+	const allCards = allBoxKeys.flatMap(
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		(boxKey): unknown => JSON.parse(getItem(boxKey)!) as Array<Card>
+	);
+
+	// Could some cards go missing?
+	if (allCards.length < initialCards.length) return false;
+
+	return true;
+};
+
+/**
+ * This is a total reset to initial state
+ */
+const resetAllStorage = (setItem: Storage["setItem"]) => {
+	setItem("step", "1");
+	setItem("ready", JSON.stringify(initialCards));
+	const allNumberedBoxKeys = Array.from({ length: 7 }).map(
+		(_, i) => `box${i + 1}`
+	);
+	allNumberedBoxKeys.forEach((boxKey) => setItem(boxKey, "[]"));
+	setItem("retired", "[]");
 };
 
 export const buildStorage = ({
 	getItem,
 	setItem,
 }: Pick<Storage, "getItem" | "setItem">) => {
-	validateCurrentStorageKeys({ getItem, setItem });
-
 	const getStep = () => {
 		const storedStep = parseInt(getItem("step") ?? "");
 		if (Number.isNaN(storedStep)) {
@@ -73,42 +88,37 @@ export const buildStorage = ({
 		return storedStep;
 	};
 
-	const getBox = (boxKey: 1 | 2 | 3 | 4 | 5 | 6 | 7) => {
-		const storedValue = getItem(`box${boxKey}`);
-
-		if (!storedValue) return [];
-
-		try {
-			const parsedBox: unknown = JSON.parse(storedValue);
-			if (!isBox(parsedBox)) throw new Error("bad contents of localStorage");
-			return parsedBox;
-		} catch (error) {
-			console.error(error);
-			console.info(`recovering from bad data in key: box${boxKey}`);
-			setItem(`box${boxKey}`, "[]");
-			return [];
-		}
-	};
+	const getBox = (boxKey: 1 | 2 | 3 | 4 | 5 | 6 | 7) =>
+		// Suppressed warning here, because we are in trusted territory
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		JSON.parse(getItem(`box${boxKey}`)!) as Array<Card>;
 
 	const getCurrentBox = () => {
 		const storedStep = getStep();
 		let workingStep = storedStep;
 		let box = getBox(getBoxKey(workingStep));
 
-		// TODO if box 1 is empty pull in ready cards
+		// TODO if we wanted box 1 but it is empty, then we should first try to pull in some 'ready' cards
 		while (box.length === 0) {
-			// TODO risk of infinite loop if all boxes are empty
+			// TODO risk of infinite loop if all numbered boxes are empty
+			// TODO what if there are only cards in retired?
 			workingStep++;
 			box = getBox(getBoxKey(workingStep));
 		}
 
-		// TODO modulo the step at some point
+		// TODO modulo the step count at some point
 		if (storedStep !== workingStep) setItem("step", workingStep.toString());
 
 		return box;
 	};
 
-	const getCurrentCard = () => getCurrentBox()[0];
+	const getCurrentCard = () => {
+		if (!isStorageStateValid(getItem)) {
+			resetAllStorage(setItem);
+		}
+
+		return getCurrentBox()[0];
+	};
 
 	return {
 		getStep,
