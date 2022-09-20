@@ -1,4 +1,5 @@
 import {
+	initialCards,
 	buildStorage,
 	createBoxValidator,
 	isStorageStateValid,
@@ -107,4 +108,16 @@ test("isStorageStateValid rejects if there are missing cards", () => {
 	}) as jest.MockedFunction<Storage["getItem"]>;
 
 	expect(isStorageStateValid(mockGetItem)).toBe(false);
+});
+
+test("isStorageStateValid accepts healthy storage state", () => {
+	const mockGetItem = jest.fn((key) => {
+		if (key === "step") return "1";
+		if (key === "ready") {
+			return JSON.stringify(initialCards);
+		}
+		return "[]";
+	}) as jest.MockedFunction<Storage["getItem"]>;
+
+	expect(isStorageStateValid(mockGetItem)).toBe(true);
 });

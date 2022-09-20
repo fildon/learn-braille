@@ -1,6 +1,6 @@
 import { getBoxKey } from "./boxSequencer";
 
-const initialCards: Array<Card> = [
+export const initialCards: Array<Card> = [
 	{ id: "01", front: "⠁", back: "A", learningState: "ready" },
 	{ id: "02", front: "⠃", back: "B", learningState: "ready" },
 	{ id: "03", front: "⠉", back: "C", learningState: "ready" },
