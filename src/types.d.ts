@@ -1,32 +1,23 @@
 /**
- * A card has two faces, each represented by a string
+ * A card represents a single learning card
  */
-type Card = [string, string];
-
-/**
- * 7 sections of a Leitner box
- */
-type Boxes = [
-	Array<Card>,
-	Array<Card>,
-	Array<Card>,
-	Array<Card>,
-	Array<Card>,
-	Array<Card>,
-	Array<Card>
-];
-
-type LearningState = {
+type Card = {
 	/**
-	 * Cards which haven't been added into the flow yet
+	 * Unique ID
 	 */
-	ready: Array<Card>;
+	id: string;
 	/**
-	 * Active leitner boxes
+	 * The front face of the card
 	 */
-	boxes: Boxes;
+	front: string;
 	/**
-	 * Cards that have been completely learned
+	 * The back face of the card
 	 */
-	retired: Array<Card>;
+	back: string;
+	/**
+	 * 0: This card is not yet in rotation
+	 * 1-7: This card is in the number leitner box
+	 * 8: This card is retired
+	 */
+	learningState: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 };
