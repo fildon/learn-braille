@@ -10,10 +10,6 @@ if (!test) throw new Error("Could not find main element");
 if (!wrong) throw new Error("Could not find wrong element");
 if (!right) throw new Error("Could not find right element");
 
-const getFromLocalStorage = (key: string) => window.localStorage.getItem(key);
-const setToLocalStorage = (key: string, value: string) =>
-	window.localStorage.setItem(key, value);
-
 type Card = {
 	faces: [string, string];
 	learningProgress: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
@@ -30,7 +26,7 @@ let cards: Array<Card> = [
 test.textContent = cards[0].faces[0];
 test.addEventListener("click", () => {
 	// Flip the card
-	cards[0].faces.reverse()
+	cards[0].faces.reverse();
 	// Update the UI
 	test.textContent = cards[0].faces[0];
 });
