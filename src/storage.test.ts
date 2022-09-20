@@ -33,7 +33,7 @@ test("getStep retrieves step from local storage", () => {
 
 test("getCurrentCard returns first card in first box", () => {
 	const mockBox = JSON.stringify([
-		{ id: "1", front: "front", back: "back", learningState: 1 },
+		{ id: "1", front: "front", back: "back", learningState: "box1" },
 	]);
 	const mockGetItem = jest.fn((key) => {
 		// Simulate 'step' being missing
@@ -55,15 +55,14 @@ test("getCurrentCard returns first card in first box", () => {
 });
 
 test("getCurrentCard checks later boxes if current is empty", () => {
-	const mockState = JSON.stringify([
-		{ id: "1", front: "front", back: "back", learningState: 1 },
-	]);
 	const mockGetItem = jest.fn((key) => {
 		if (key === "step") return "1";
-		if (key === "box1") return "[]";
-		if (key === "box2") return "[]";
-		return mockState;
+		if (key === "box3") {
+			return JSON.stringify(initialCards);
+		}
+		return "[]";
 	}) as jest.MockedFunction<Storage["getItem"]>;
+
 	const mockSetItem = jest.fn() as jest.MockedFunction<Storage["setItem"]>;
 	const storage = buildStorage({
 		getItem: mockGetItem,
@@ -72,7 +71,6 @@ test("getCurrentCard checks later boxes if current is empty", () => {
 
 	storage.getCurrentCard();
 
-	// expect(mockGetItem).toHaveBeenCalledTimes(4);
 	expect(mockGetItem).toHaveBeenCalledWith("step");
 	expect(mockGetItem).toHaveBeenCalledWith("box1");
 	expect(mockGetItem).toHaveBeenCalledWith("box2");
@@ -120,4 +118,26 @@ test("isStorageStateValid accepts healthy storage state", () => {
 	}) as jest.MockedFunction<Storage["getItem"]>;
 
 	expect(isStorageStateValid(mockGetItem)).toBe(true);
+});
+
+test("setCardTo removes card from origin and adds to target", () => {
+	const mockGetItem = jest.fn((key) => {
+		if (key === "step") return "1";
+		if (key === "ready") {
+			return JSON.stringify(initialCards);
+		}
+		return "[]";
+	}) as jest.MockedFunction<Storage["getItem"]>;
+	const mockSetItem = jest.fn();
+
+	const storage = buildStorage({
+		getItem: mockGetItem,
+		setItem: mockSetItem,
+	});
+
+	storage.setCardTo(initialCards[0], "box1");
+
+	const [headCard, ...tailCards] = initialCards;
+	expect(mockSetItem).toHaveBeenCalledWith("ready", JSON.stringify(tailCards));
+	expect(mockSetItem).toHaveBeenCalledWith("box1", JSON.stringify([headCard]));
 });

@@ -39,9 +39,9 @@ const isCard = (obj: unknown): obj is Card =>
 	typeof obj.back === "string" &&
 	[
 		"ready",
-		...Array.from({ length: 7 }).map((_, i) => i + 1),
+		...Array.from({ length: 7 }).map((_, i) => `box${i + 1}`),
 		"retired",
-	].includes(obj.learningState as string | number);
+	].includes(obj.learningState as string);
 
 const isBox = (obj: unknown): obj is Array<Card> =>
 	isObj(obj) && Array.isArray(obj) && obj.every((member) => isCard(member));
@@ -109,10 +109,10 @@ export const buildStorage = ({
 		return storedStep;
 	};
 
-	const getBox = (boxKey: 1 | 2 | 3 | 4 | 5 | 6 | 7) =>
+	const getBox = (boxKey: Card["learningState"]) =>
 		// Suppressed warning here, because we are in trusted territory
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		JSON.parse(getItem(`box${boxKey}`)!) as Array<Card>;
+		JSON.parse(getItem(boxKey)!) as Array<Card>;
 
 	const getCurrentBox = () => {
 		const storedStep = getStep();
@@ -124,6 +124,8 @@ export const buildStorage = ({
 			// TODO risk of infinite loop if all numbered boxes are empty
 			// TODO what if there are only cards in retired?
 			workingStep++;
+			console.log({ try: getBoxKey(workingStep) });
+			console.log({ box: getBox(getBoxKey(workingStep)) });
 			box = getBox(getBoxKey(workingStep));
 		}
 
@@ -141,8 +143,20 @@ export const buildStorage = ({
 		return getCurrentBox()[0];
 	};
 
+	const setCardTo = (card: Card, target: Card["learningState"]) => {
+		const currentBox = getBox(card.learningState);
+		setItem(
+			card.learningState,
+			JSON.stringify(currentBox.filter(({ id }) => id !== card.id))
+		);
+
+		const targetBox = getBox(target);
+		setItem(target, JSON.stringify([...targetBox, card]));
+	};
+
 	return {
 		getStep,
 		getCurrentCard,
+		setCardTo,
 	};
 };

@@ -19,5 +19,14 @@ type Card = {
 	 * 1-7: This card is in the number leitner box
 	 * 8: This card is retired
 	 */
-	learningState: "ready" | 1 | 2 | 3 | 4 | 5 | 6 | 7 | "retired";
+	learningState:
+		| "ready"
+		| "box1"
+		| "box2"
+		| "box3"
+		| "box4"
+		| "box5"
+		| "box6"
+		| "box7"
+		| "retired";
 };
