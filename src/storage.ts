@@ -1,11 +1,32 @@
 import { getBoxKey } from "./boxSequencer";
 
 const initialCards: Array<Card> = [
-	{ id: "1", front: "⠁", back: "A", learningState: "ready" },
-	{ id: "2", front: "⠃", back: "B", learningState: "ready" },
-	{ id: "3", front: "⠉", back: "C", learningState: "ready" },
-	{ id: "4", front: "⠙", back: "D", learningState: "ready" },
-	{ id: "5", front: "⠑", back: "E", learningState: "ready" },
+	{ id: "01", front: "⠁", back: "A", learningState: "ready" },
+	{ id: "02", front: "⠃", back: "B", learningState: "ready" },
+	{ id: "03", front: "⠉", back: "C", learningState: "ready" },
+	{ id: "04", front: "⠙", back: "D", learningState: "ready" },
+	{ id: "05", front: "⠑", back: "E", learningState: "ready" },
+	{ id: "06", front: "⠋", back: "F", learningState: "ready" },
+	{ id: "07", front: "⠛", back: "G", learningState: "ready" },
+	{ id: "08", front: "⠓", back: "H", learningState: "ready" },
+	{ id: "09", front: "⠊", back: "I", learningState: "ready" },
+	{ id: "10", front: "⠚", back: "J", learningState: "ready" },
+	{ id: "11", front: "⠅", back: "K", learningState: "ready" },
+	{ id: "12", front: "⠇", back: "L", learningState: "ready" },
+	{ id: "13", front: "⠍", back: "M", learningState: "ready" },
+	{ id: "14", front: "⠝", back: "N", learningState: "ready" },
+	{ id: "15", front: "⠕", back: "O", learningState: "ready" },
+	{ id: "16", front: "⠏", back: "P", learningState: "ready" },
+	{ id: "17", front: "⠟", back: "Q", learningState: "ready" },
+	{ id: "18", front: "⠗", back: "R", learningState: "ready" },
+	{ id: "19", front: "⠎", back: "S", learningState: "ready" },
+	{ id: "20", front: "⠞", back: "T", learningState: "ready" },
+	{ id: "21", front: "⠥", back: "U", learningState: "ready" },
+	{ id: "22", front: "⠧", back: "V", learningState: "ready" },
+	{ id: "23", front: "⠺", back: "W", learningState: "ready" },
+	{ id: "24", front: "⠭", back: "X", learningState: "ready" },
+	{ id: "25", front: "⠽", back: "Y", learningState: "ready" },
+	{ id: "26", front: "⠵", back: "Z", learningState: "ready" },
 ];
 
 const isObj = (obj: unknown): obj is Record<PropertyKey, unknown> =>
