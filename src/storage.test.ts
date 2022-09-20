@@ -1,7 +1,5 @@
 import { buildStorage } from "./storage";
 
-import type { LearningState } from "./storage";
-
 it("retrieves current state", () => {
 	const mockState: LearningState = {
 		ready: [["a", "b"]],
