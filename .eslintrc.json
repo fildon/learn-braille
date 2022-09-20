@@ -18,7 +18,8 @@
 		"plugin:import/typescript"
 	],
 	"rules": {
-		"react/react-in-jsx-scope": "off",
+		"no-warning-comments": "warn",
+		"@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
 		"import/order": [
 			"warn",
 			{

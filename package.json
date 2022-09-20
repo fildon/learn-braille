@@ -5,6 +5,7 @@
     "build": "shx cp -r static/. dist && esbuild src/index.ts --bundle --minify --outfile=dist/index.js"
   },
   "devDependencies": {
+    "@types/jest": "^29.0.3",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "esbuild": "^0.15.8",
     "eslint": "^8.23.1",

@@ -1,3 +1,5 @@
+import { buildStorage } from "./storage";
+
 // As noted in `jest.config.ts` this file is the 'imperative shell'
 // As such it will not be tested. Therefore it should have
 // only the bare minimum of code in it.
@@ -10,37 +12,31 @@ if (!test) throw new Error("Could not find main element");
 if (!wrong) throw new Error("Could not find wrong element");
 if (!right) throw new Error("Could not find right element");
 
-type Card = {
-	faces: [string, string];
-	learningProgress: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
-};
+const storage = buildStorage({
+	getItem: (key) => window.localStorage.getItem(key),
+	setItem: (key, value) => window.localStorage.setItem(key, value),
+});
 
-let cards: Array<Card> = [
-	{ faces: ["⠁", "A"], learningProgress: 0 },
-	{ faces: ["⠃", "B"], learningProgress: 0 },
-	{ faces: ["⠉", "C"], learningProgress: 0 },
-	{ faces: ["⠙", "D"], learningProgress: 0 },
-	{ faces: ["⠑", "E"], learningProgress: 0 },
-];
+const state = storage.getState();
 
-test.textContent = cards[0].faces[0];
+test.textContent = state.boxes[0][0][0];
 test.addEventListener("click", () => {
 	// Flip the card
-	cards[0].faces.reverse();
+	state.boxes[0][0].reverse();
 	// Update the UI
-	test.textContent = cards[0].faces[0];
+	test.textContent = state.boxes[0][0][0];
 });
 wrong.addEventListener("click", () => {
 	// Rotate cards
-	const [head, ...tail] = cards;
-	cards = [...tail, head];
+	const [head, ...tail] = state.boxes[0];
+	state.boxes[0] = [...tail, head];
 	// Update the UI
-	test.textContent = cards[0].faces[0];
+	test.textContent = state.boxes[0][0][0];
 });
 right.addEventListener("click", () => {
 	// Rotate cards
-	const [head, ...tail] = cards;
-	cards = [...tail, head];
+	const [head, ...tail] = state.boxes[0];
+	state.boxes[0] = [...tail, head];
 	// Update the UI
-	test.textContent = cards[0].faces[0];
+	test.textContent = state.boxes[0][0][0];
 });
