@@ -1,16 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <base href="/learn-braille/">
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + Svelte + TS</title>
-    <script type="module" crossorigin src="/learn-braille/assets/index.9aea5168.js"></script>
-    <link rel="stylesheet" href="/learn-braille/assets/index.3635012e.css">
-  </head>
-  <body>
-    <div id="app"></div>
-    
-  </body>
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learn Braille</title>
+</head>
+
+<body>
+  <details>
+    <summary>What is this?</summary>
+    Every braille symbol has a corresponding representation in text. You will be presented either a braille symbol,
+    or its text equivalent. You can click on it, to 'flip' and see the corresponding alternative representation. If
+    you already knew that pairing, click the ✅, otherwise click the ❌. You will then be presented a new symbol or text
+    representation. The app will remember which ones you got right and which ones you got wrong. Over time you will be
+    presented with the ones you get wrong more often, until gradually you learn them all.
+  </details>
+  <main>
+    <button id="test"></button>
+    <button id="wrong">❌</button>
+    <button id="right">✅</button>
+  </main>
+  <img src="./Braille_A1.svg"></img>
+</body>
+<script src="index.js"></script>
+
 </html>
