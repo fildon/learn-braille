@@ -46,7 +46,12 @@ export const buildStorage = ({
 		return JSON.parse(storedState) as LearningState;
 	};
 
+	const setState = (newState: LearningState) => {
+		setItem("learning", JSON.stringify(newState));
+	};
+
 	return {
 		getState,
+		setState,
 	};
 };
