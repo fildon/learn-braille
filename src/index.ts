@@ -1,3 +1,6 @@
+import { buildStorage } from "./storage";
+import { markCardCorrect, markCardIncorrect } from "./cardActions";
+
 // As noted in `jest.config.ts` this file is the 'imperative shell'
 // As such it will not be checked. Therefore it should have
 // only the bare minimum of code in it.
@@ -10,10 +13,12 @@ if (!check) throw new Error("Could not find main element");
 if (!wrong) throw new Error("Could not find wrong element");
 if (!right) throw new Error("Could not find right element");
 
-const currentCard = {
-	front: "front",
-	back: "back",
-};
+const storage = buildStorage({
+	getItem: (key) => window.localStorage.getItem(key),
+	setItem: (key, value) => window.localStorage.setItem(key, value),
+});
+
+let currentCard = storage.getCurrentCard();
 let showFront = true;
 check.textContent = currentCard.front;
 check.addEventListener("click", () => {
@@ -24,13 +29,23 @@ check.addEventListener("click", () => {
 });
 wrong.addEventListener("click", () => {
 	showFront = true;
-	// TODO mark card incorrect
+	const nextCard = markCardIncorrect(
+		currentCard,
+		(card, target) => storage.setCardTo(card, target),
+		() => storage.getCurrentCard()
+	);
+	currentCard = nextCard;
 	// Update the UI
 	check.textContent = currentCard.front;
 });
 right.addEventListener("click", () => {
 	showFront = true;
-	// TODO mark card correct
+	const nextCard = markCardCorrect(
+		currentCard,
+		(card, target) => storage.setCardTo(card, target),
+		() => storage.getCurrentCard()
+	);
+	currentCard = nextCard;
 	// Update the UI
 	check.textContent = currentCard.front;
 });

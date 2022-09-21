@@ -139,5 +139,8 @@ test("setCardTo removes card from origin and adds to target", () => {
 
 	const [headCard, ...tailCards] = initialCards;
 	expect(mockSetItem).toHaveBeenCalledWith("ready", JSON.stringify(tailCards));
-	expect(mockSetItem).toHaveBeenCalledWith("box1", JSON.stringify([headCard]));
+	expect(mockSetItem).toHaveBeenCalledWith(
+		"box1",
+		JSON.stringify([{ ...headCard, learningState: "box1" }])
+	);
 });

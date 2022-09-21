@@ -117,19 +117,43 @@ export const buildStorage = ({
 	const getCurrentBox = () => {
 		const storedStep = getStep();
 		let workingStep = storedStep;
+		const targetBoxKey = getBoxKey(workingStep);
+
+		// There's a special case, if we want box 1, but it is empty
+		// Then we try to pull in new cards from 'ready'
+		if (targetBoxKey === "box1") {
+			// TODO BUG! This pulls in cards too constantly, and never gives a chance for the box target to increase
+			const box1 = getBox("box1");
+			const ready = getBox("ready");
+
+			if (box1.length === 0 && ready.length > 0) {
+				// Let's try to take up to 5 ready cards
+				// TODO let's pull 5 RANDOM cards
+				const cardsToAdd = ready.slice(0, 5);
+				cardsToAdd.forEach((cardToAdd) => setCardTo(cardToAdd, "box1"));
+			}
+		}
+
+		// Another special case, if every card is in 'retired'
+		// Then we just have to hand a retired card, no matter what
+		const retiredBox = getBox("retired");
+		if (retiredBox.length === initialCards.length) {
+			return retiredBox;
+		}
+
+		// Otherwise in this case we know we have some cards available in numbered boxes
 		let box = getBox(getBoxKey(workingStep));
 
-		// TODO if we wanted box 1 but it is empty, then we should first try to pull in some 'ready' cards
 		while (box.length === 0) {
-			// TODO risk of infinite loop if all numbered boxes are empty
-			// TODO what if there are only cards in retired?
 			workingStep++;
 			console.log({ try: getBoxKey(workingStep) });
 			console.log({ box: getBox(getBoxKey(workingStep)) });
 			box = getBox(getBoxKey(workingStep));
 		}
 
-		// TODO modulo the step count at some point
+		// This keeps the step counter sensibly rotating, rather than growing
+		// The -1/+1 is to keep it running from 1-64 (rather than 0-63)
+		workingStep = ((workingStep - 1) % 64) + 1;
 		if (storedStep !== workingStep) setItem("step", workingStep.toString());
 
 		return box;
@@ -140,6 +164,7 @@ export const buildStorage = ({
 			resetAllStorage(setItem);
 		}
 
+		// TODO pull a RANDOM card
 		return getCurrentBox()[0];
 	};
 
@@ -151,7 +176,8 @@ export const buildStorage = ({
 		);
 
 		const targetBox = getBox(target);
-		setItem(target, JSON.stringify([...targetBox, card]));
+		const updatedCard: Card = { ...card, learningState: target };
+		setItem(target, JSON.stringify([...targetBox, updatedCard]));
 	};
 
 	return {
