@@ -78,6 +78,54 @@ test("getCurrentCard checks later boxes if current is empty", () => {
 	expect(mockSetItem).toHaveBeenCalledWith("step", "4");
 });
 
+test("getCurrentCard returns from the retiredBox if all cards are there", () => {
+	const mockGetItem = jest.fn((key) => {
+		if (key === "step") return "1";
+		if (key === "retired") {
+			return JSON.stringify(initialCards);
+		}
+		return "[]";
+	}) as jest.MockedFunction<Storage["getItem"]>;
+
+	const mockSetItem = jest.fn() as jest.MockedFunction<Storage["setItem"]>;
+	const storage = buildStorage({
+		getItem: mockGetItem,
+		setItem: mockSetItem,
+	});
+
+	storage.getCurrentCard();
+
+	expect(mockGetItem).toHaveBeenCalledWith("step");
+	expect(mockGetItem).toHaveBeenCalledWith("retired");
+});
+
+test("getCurrentCard pulls from ready if box1 is empty", () => {
+	let cardsSentToBox1 = false;
+	const mockGetItem = jest.fn((key) => {
+		if (key === "step") return "1";
+		if (key === "ready") {
+			return JSON.stringify(initialCards);
+		}
+		if (cardsSentToBox1 && key === "box1") {
+			return JSON.stringify(initialCards);
+		}
+		return "[]";
+	}) as jest.MockedFunction<Storage["getItem"]>;
+
+	const mockSetItem = jest.fn((_key, _value) => {
+		cardsSentToBox1 = true;
+	}) as jest.MockedFunction<Storage["setItem"]>;
+	const storage = buildStorage({
+		getItem: mockGetItem,
+		setItem: mockSetItem,
+	});
+
+	storage.getCurrentCard();
+
+	expect(mockGetItem).toHaveBeenCalledWith("step");
+	expect(mockGetItem).toHaveBeenCalledWith("ready");
+});
+
 test("isStoredBoxValid rejects null boxes", () => {
 	const mockGetItem = jest.fn().mockReturnValue(null);
 	const boxValidator = createBoxValidator(mockGetItem);

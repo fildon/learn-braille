@@ -146,8 +146,6 @@ export const buildStorage = ({
 
 		while (box.length === 0) {
 			workingStep++;
-			console.log({ try: getBoxKey(workingStep) });
-			console.log({ box: getBox(getBoxKey(workingStep)) });
 			box = getBox(getBoxKey(workingStep));
 		}
 
