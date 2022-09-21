@@ -119,14 +119,14 @@ export const buildStorage = ({
 		let workingStep = storedStep;
 		const targetBoxKey = getBoxKey(workingStep);
 
-		// There's a special case, if we want box 1, but it is empty
-		// Then we try to pull in new cards from 'ready'
+		// There's a special case, if we have cards in ready, and low boxes are empty
+		// Then we should start pulling in ready cards
 		if (targetBoxKey === "box1") {
-			// TODO BUG! This pulls in cards too constantly, and never gives a chance for the box target to increase
 			const box1 = getBox("box1");
+			const box2 = getBox("box2");
 			const ready = getBox("ready");
 
-			if (box1.length === 0 && ready.length > 0) {
+			if (box1.length === 0 && box2.length === 0 && ready.length > 0) {
 				// Shuffle the ready cards, and take up to 5
 				const shuffledCardsInRead = ready
 					.map((card) => ({ card, rank: Math.random() }))
@@ -165,8 +165,11 @@ export const buildStorage = ({
 			resetAllStorage(setItem);
 		}
 
-		// TODO pull a RANDOM card
-		return getCurrentBox()[0];
+		const box = getCurrentBox();
+		const randomIndex = Math.floor(box.length * Math.random());
+		const randomCard = box[randomIndex];
+
+		return randomCard;
 	};
 
 	const setCardTo = (card: Card, target: Card["learningState"]) => {
