@@ -127,9 +127,12 @@ export const buildStorage = ({
 			const ready = getBox("ready");
 
 			if (box1.length === 0 && ready.length > 0) {
-				// Let's try to take up to 5 ready cards
-				// TODO let's pull 5 RANDOM cards
-				const cardsToAdd = ready.slice(0, 5);
+				// Shuffle the ready cards, and take up to 5
+				const shuffledCardsInRead = ready
+					.map((card) => ({ card, rank: Math.random() }))
+					.sort((a, b) => a.rank - b.rank)
+					.map(({ card }) => card);
+				const cardsToAdd = shuffledCardsInRead.slice(0, 5);
 				cardsToAdd.forEach((cardToAdd) => setCardTo(cardToAdd, "box1"));
 			}
 		}
