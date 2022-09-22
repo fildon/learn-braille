@@ -10,20 +10,28 @@ const fetchThenCache = async (request: RequestInfo) => {
 	return responseFromNetwork;
 };
 
-const networkFirst = async (request: RequestInfo) =>
-	// First try to get the resource from the network
-	fetchThenCache(request)
-		// Then try the cache
-		.catch(() => caches.match(request))
-		.then(
-			(cacheResponse) =>
-				cacheResponse ??
-				// Finally we have to respond with something...
-				new Response("Network error happened", {
-					status: 408,
-					headers: { "Content-Type": "text/plain" },
-				})
-		);
+const cacheFirst = async (request: RequestInfo) => {
+	// First try to get the resource from the cache
+	const responseFromCache = await caches.match(request);
+	if (responseFromCache) {
+		console.info(`Successful cache hit for: ${request.toString()}`);
+		return responseFromCache;
+	} else {
+		console.info(`No cache found for: ${request.toString()}`);
+	}
+
+	// Next try to get the resource from the network
+	return fetchThenCache(request).catch((error) => {
+		console.error(error);
+		// when both the cache and the network are unavailable,
+		// there is nothing we can do, but we must always
+		// return a Response object
+		return new Response("Network error happened", {
+			status: 408,
+			headers: { "Content-Type": "text/plain" },
+		});
+	});
+};
 
 self.addEventListener("install", (event) => {
 	// At time of writing TS does not have good support for the InstallEvent type
@@ -53,5 +61,5 @@ self.addEventListener("fetch", (event) => {
 		request: RequestInfo;
 		respondWith: (response: Response | Promise<Response>) => void;
 	};
-	fetchEvent.respondWith(networkFirst(fetchEvent.request));
+	fetchEvent.respondWith(cacheFirst(fetchEvent.request));
 });
