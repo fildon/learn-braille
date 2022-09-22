@@ -1,6 +1,8 @@
 # Learn Braille
 
-A simple flashcard webapp
+A simple flashcard webapp for learning braille.
+
+Hosted at [fildon.me/learn-braille](https://fildon.me/learn-braille/)
 
 ## Developing
 
