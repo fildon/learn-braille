@@ -1,0 +1,60 @@
+/* Vars */
+:root {
+	--accent: #e92438;
+	--soft: #f8efde;
+	--hard: #231f1e;
+}
+
+/* Global */
+* {
+	box-sizing: border-box;
+	text-align: center;
+}
+details summary {
+	border: dashed var(--hard);
+	padding: 1rem;
+	cursor: pointer;
+}
+details summary > * {
+	display: inline;
+}
+details p {
+	text-align: left;
+}
+button {
+	padding: 1rem;
+}
+
+/* Composition */
+.column-flow {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+.column-flow > * {
+	max-width: min(95vw, 60ch);
+	min-width: min(95vw, 60ch);
+	margin-left: auto;
+	margin-right: auto;
+}
+.column-flow > * + * {
+	margin-top: 1rem;
+}
+
+/* Utility */
+.card {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+	padding: 1rem;
+	font-size: 3rem;
+	min-width: 6rem;
+	min-height: 6rem;
+	text-align: center;
+}
+
+/* Block */
+
+/* Exception */
