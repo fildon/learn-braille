@@ -2,7 +2,7 @@
 	"scripts": {
 		"lint": "prettier --check src/. && eslint . --ext .ts && shx echo Linting completed successfully",
 		"test": "jest",
-		"build": "shx cp -r static/. dist && esbuild src/index.ts src/serviceWorker.ts --bundle --minify --outdir=dist"
+		"build": "shx cp -r static/. dist && esbuild src/index.ts src/service_worker.ts --bundle --minify --outdir=dist"
 	},
 	"devDependencies": {
 		"@types/jest": "^29.0.3",

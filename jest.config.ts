@@ -7,7 +7,7 @@ const config: Config = {
 	coveragePathIgnorePatterns: [
 		// These two files form the imperative shell, which will not be tested
 		"src/index.ts",
-		"src/serviceworker.ts",
+		"src/service_worker.ts",
 	],
 	coverageThreshold: {
 		global: {
