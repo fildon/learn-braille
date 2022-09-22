@@ -1,12 +1,14 @@
-import type {Config} from 'jest';
+import type { Config } from "jest";
 
 const config: Config = {
-	verbose: true,
-	preset: 'ts-jest',
+	preset: "ts-jest",
 	collectCoverage: true,
-	collectCoverageFrom: ['**/src/**'],
-	// This is the imperative shell and will not be tested
-	coveragePathIgnorePatterns: ['src/index.ts'],
+	collectCoverageFrom: ["**/src/**"],
+	coveragePathIgnorePatterns: [
+		// These two files form the imperative shell, which will not be tested
+		"src/index.ts",
+		"src/serviceworker.ts",
+	],
 	coverageThreshold: {
 		global: {
 			branches: 100,
