@@ -4,7 +4,9 @@ import { markCardCorrect, markCardIncorrect } from "./stateMachine";
 test("markCardCorrect updates currentCard", () => {
 	const updated = markCardCorrect(initialState);
 
-	expect(updated.currentCard.id).not.toBe(initialState.currentCard.id);
+	expect(updated.currentCard.id).not.toBe(
+		initialState.currentCard.id
+	);
 	expect(updated.box2).toHaveLength(1);
 });
 
@@ -16,9 +18,14 @@ test("markCardCorrect pulls in ready cards", () => {
 		learningState: "box2",
 	};
 	const stateThatNeedsToPull: GameState = {
-		version: "1",
+		version: "2",
 		step: 1,
 		currentCard: mockCardInCurrent,
+		guesses: [
+			mockCardInCurrent,
+			mockCardInCurrent,
+			mockCardInCurrent,
+		],
 		ready: [
 			{ id: "2", front: "F", back: "B", learningState: "ready" },
 			{ id: "3", front: "G", back: "C", learningState: "ready" },
@@ -60,9 +67,10 @@ test("markCardCorrect returns a random retired card if there are no others", () 
 		learningState: "retired",
 	};
 	const mockInitialState: GameState = {
-		version: "1",
+		version: "2",
 		step: 1,
 		currentCard: mockCardA,
+		guesses: [mockCardA, mockCardA, mockCardA],
 		ready: [],
 		box1: [],
 		box2: [],
@@ -99,9 +107,10 @@ test("markCardCorrect does not add ready cards if box2 has members", () => {
 		learningState: "box2",
 	};
 	const mockInitialState: GameState = {
-		version: "1",
+		version: "2",
 		step: 1,
 		currentCard: mockCardA,
+		guesses: [mockCardA, mockCardA, mockCardA],
 		ready: [mockCardB],
 		box1: [],
 		box2: [mockCardC],
@@ -132,9 +141,10 @@ test("markCardCorrect will not pull in ready cards if there are none", () => {
 		learningState: "box5",
 	};
 	const mockInitialState: GameState = {
-		version: "1",
+		version: "2",
 		step: 1,
 		currentCard: mockCardA,
+		guesses: [mockCardA, mockCardA, mockCardA],
 		ready: [],
 		box1: [],
 		box2: [],
@@ -165,9 +175,10 @@ test("markCardIncorrect moves the card to box1", () => {
 		learningState: "box5",
 	};
 	const mockInitialState: GameState = {
-		version: "1",
+		version: "2",
 		step: 1,
 		currentCard: mockCardA,
+		guesses: [mockCardA, mockCardA, mockCardA],
 		ready: [],
 		box1: [],
 		box2: [],

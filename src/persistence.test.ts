@@ -2,10 +2,37 @@ import { stringToState, stateToString } from "./persistence";
 
 test("stateToString and stringToState preserve state", () => {
 	const mockState: GameState = {
-		version: "1",
+		version: "2",
 		step: 1,
-		currentCard: { id: "1", front: "f", back: "b", learningState: "ready" },
-		ready: [{ id: "2", front: "F", back: "B", learningState: "ready" }],
+		currentCard: {
+			id: "1",
+			front: "f",
+			back: "b",
+			learningState: "ready",
+		},
+		guesses: [
+			{
+				id: "1",
+				front: "f",
+				back: "b",
+				learningState: "ready",
+			},
+			{
+				id: "1",
+				front: "f",
+				back: "b",
+				learningState: "ready",
+			},
+			{
+				id: "1",
+				front: "f",
+				back: "b",
+				learningState: "ready",
+			},
+		],
+		ready: [
+			{ id: "2", front: "F", back: "B", learningState: "ready" },
+		],
 		box1: [],
 		box2: [],
 		box3: [],

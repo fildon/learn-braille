@@ -7,10 +7,13 @@ export type SerializeableState = {
 	version: string;
 	step: number;
 	currentCard: Card;
+	guesses: [Card, Card, Card];
 	cards: Array<Card>;
 };
 
-const isObj = (unknown: unknown): unknown is Record<PropertyKey, unknown> =>
+const isObj = (
+	unknown: unknown
+): unknown is Record<PropertyKey, unknown> =>
 	unknown !== null && typeof unknown === "object";
 
 const isCard = (obj: unknown): obj is Card =>
@@ -25,13 +28,15 @@ const isCard = (obj: unknown): obj is Card =>
 	].includes(obj.learningState as string);
 
 const isBox = (obj: unknown): obj is Array<Card> =>
-	isObj(obj) && Array.isArray(obj) && obj.every((member) => isCard(member));
+	isObj(obj) &&
+	Array.isArray(obj) &&
+	obj.every((member) => isCard(member));
 
 const isSerializedGameState = (
 	unknown: unknown
 ): unknown is SerializeableState =>
 	isObj(unknown) &&
-	unknown["version"] === "1" &&
+	unknown["version"] === "2" &&
 	typeof unknown["step"] === "number" &&
 	!Number.isNaN(unknown["step"]) &&
 	isBox(unknown["cards"]);
@@ -46,10 +51,12 @@ const serializedStateToStructuredState = ({
 	step,
 	cards,
 	currentCard,
+	guesses,
 }: SerializeableState): GameState => ({
 	version,
 	step,
 	currentCard,
+	guesses,
 	ready: cards.filter(isLearningState("ready")),
 	box1: cards.filter(isLearningState("box1")),
 	box2: cards.filter(isLearningState("box2")),
@@ -88,6 +95,7 @@ export const stateToString = (state: GameState): string => {
 		version: state.version,
 		step: state.step,
 		currentCard: state.currentCard,
+		guesses: state.guesses,
 		cards: allCards,
 	};
 
@@ -124,9 +132,10 @@ const initialCards: Array<Card> = [
 ];
 
 export const initialState: GameState = {
-	version: "1",
+	version: "2",
 	step: 1,
 	currentCard: { ...initialCards[0], learningState: "box1" },
+	guesses: [initialCards[1], initialCards[2], initialCards[3]],
 	ready: initialCards.slice(5),
 	box1: initialCards
 		.slice(0, 5)

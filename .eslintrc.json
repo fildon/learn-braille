@@ -19,11 +19,14 @@
 	],
 	"rules": {
 		"no-warning-comments": "warn",
-		"@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+		"@typescript-eslint/no-unused-vars": [
+			"warn",
+			{ "argsIgnorePattern": "^_" }
+		],
 		"import/order": [
 			"warn",
 			{
-        "newlines-between": "always",
+				"newlines-between": "always",
 				"groups": [
 					"builtin",
 					"external",

@@ -1,4 +1,11 @@
-type ActiveBox = "box1" | "box2" | "box3" | "box4" | "box5" | "box6" | "box7";
+type ActiveBox =
+	| "box1"
+	| "box2"
+	| "box3"
+	| "box4"
+	| "box5"
+	| "box6"
+	| "box7";
 
 type LearningState = "ready" | ActiveBox | "retired";
 
@@ -34,6 +41,10 @@ type GameState = {
 	 * But it is also available here for convenience.
 	 */
 	currentCard: Card;
+	/**
+	 * Cards which are not the card under test, intended as false guesses
+	 */
+	guesses: [Card, Card, Card];
 	ready: Array<Card>;
 	box1: Array<Card>;
 	box2: Array<Card>;

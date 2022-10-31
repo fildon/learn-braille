@@ -1,16 +1,24 @@
-import { initialState, stateToString, stringToState } from "./persistence";
-import { markCardCorrect, markCardIncorrect } from "./stateMachine";
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import {
+	initialState,
+	stateToString,
+	stringToState,
+} from "./persistence";
+import {
+	markCardCorrect,
+	markCardIncorrect,
+	shuffle,
+} from "./stateMachine";
 
 // As noted in `jest.config.ts` this file is the 'imperative shell'
 // As such it will not be checked. Therefore it should have
 // only the bare minimum of code in it.
 
-const check = document.querySelector("button#check");
-const wrong = document.querySelector("button#wrong");
-const right = document.querySelector("button#right");
-if (!check) throw new Error("Could not find check element");
-if (!wrong) throw new Error("Could not find wrong element");
-if (!right) throw new Error("Could not find right element");
+const test = document.querySelector("#test")!;
+const answerA = document.querySelector("#A")!;
+const answerB = document.querySelector("#B")!;
+const answerC = document.querySelector("#C")!;
+const answerD = document.querySelector("#D")!;
 
 let state: GameState;
 try {
@@ -18,33 +26,34 @@ try {
 } catch (_) {
 	state = initialState;
 }
+let answers: { text: string; isCorrect: boolean }[] = [];
 
-let showFront = true;
-check.textContent = state.currentCard.front;
+const updateUI = () => {
+	answers = shuffle([
+		{ text: state.currentCard.back, isCorrect: true },
+		...state.guesses.map((g) => ({
+			text: g.back,
+			isCorrect: false,
+		})),
+	]);
+	test.textContent = state.currentCard.front;
+	answerA.textContent = answers[0].text;
+	answerB.textContent = answers[1].text;
+	answerC.textContent = answers[2].text;
+	answerD.textContent = answers[3].text;
+};
 
-check.addEventListener("click", () => {
-	// Flip which side we show
-	showFront = !showFront;
-	// Update the UI
-	check.textContent = showFront
-		? state.currentCard.front
-		: state.currentCard.back;
-});
-wrong.addEventListener("click", () => {
-	showFront = true;
-	state = markCardIncorrect(state);
+updateUI();
 
-	// Persist updated state
-	window.localStorage.setItem("state", stateToString(state));
-	// Update the UI
-	check.textContent = state.currentCard.front;
-});
-right.addEventListener("click", () => {
-	showFront = true;
-	state = markCardCorrect(state);
-
-	// Persist updated state
-	window.localStorage.setItem("state", stateToString(state));
-	// Update the UI
-	check.textContent = state.currentCard.front;
-});
+[answerA, answerB, answerC, answerD].forEach((answer, i) =>
+	answer.addEventListener("click", () => {
+		// If this was correct?
+		state = answers[i].isCorrect
+			? markCardCorrect(state)
+			: markCardIncorrect(state);
+		// Persist
+		window.localStorage.setItem("state", stateToString(state));
+		// Update UI
+		updateUI();
+	})
+);

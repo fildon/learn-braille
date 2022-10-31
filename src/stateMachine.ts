@@ -18,17 +18,19 @@ const moveCard = (
 	};
 };
 
+export const shuffle = <T>(items: T[]) =>
+	items
+		.map((item) => ({ item, rank: Math.random() }))
+		.sort((a, b) => a.rank - b.rank)
+		.map(({ item }) => item);
+
 const pullInReadyCardsIfNeeded = (state: GameState): GameState => {
 	if (state.box1.length > 0) return state;
 	if (state.box2.length > 0) return state;
 	if (state.ready.length === 0) return state;
 
 	// Shuffle the ready cards, and take up to 5
-	const shuffledCardsInRead = state.ready
-		.map((card) => ({ card, rank: Math.random() }))
-		.sort((a, b) => a.rank - b.rank)
-		.map(({ card }) => card);
-	const cardsToAdd = shuffledCardsInRead.slice(0, 5);
+	const cardsToAdd = shuffle(state.ready).slice(0, 5);
 
 	const newState = cardsToAdd.reduce(
 		(acc, curr) => moveCard(acc, curr, "box1"),
@@ -64,6 +66,34 @@ const advanceStepToNonEmptyBox = (state: GameState): GameState => {
 	return { ...state, step: workingStep };
 };
 
+const getFalseGuesses = (
+	state: GameState,
+	correctCard: Card
+): [Card, Card, Card] => {
+	const correctBox = state[getBoxKey(state.step)];
+	// If there are enough cards in the correct box, then we take them all from there.
+	if (correctBox.length >= 4) {
+		return shuffle(
+			correctBox.filter((card) => card.id !== correctCard.id)
+		).slice(0, 3) as [Card, Card, Card];
+	}
+
+	// Else we need to look in other boxes
+	return shuffle(
+		[
+			...state.ready,
+			...state.box1,
+			...state.box2,
+			...state.box3,
+			...state.box4,
+			...state.box5,
+			...state.box6,
+			...state.box7,
+			...state.retired,
+		].filter((card) => card.id !== correctCard.id)
+	).slice(0, 3) as [Card, Card, Card];
+};
+
 const advanceState = (state: GameState): GameState => {
 	// Special case, if every card is in 'retired'
 	// Then we just have to return a random other retired card
@@ -83,11 +113,12 @@ const advanceState = (state: GameState): GameState => {
 	const box = advancedState[getBoxKey(advancedState.step)];
 
 	const randomIndex = Math.floor(box.length * Math.random());
-	const randomCard = box[randomIndex];
+	const cardToTest = box[randomIndex];
 
 	return {
 		...advancedState,
-		currentCard: randomCard,
+		guesses: getFalseGuesses(advancedState, cardToTest),
+		currentCard: cardToTest,
 	};
 };
 
