@@ -1,36 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Learn Braille</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-
-<body class="column-flow">
-  <h1>Learn Braille</h1>
-  <main>
-    <button id="check" class="card"></button>
-    <button id="wrong">❌</button>
-    <button id="right">✅</button>
-  </main>
-  <details>
-    <summary>What is this?</summary>
-    <p>This app will teach you English Braille. Every braille symbol has a corresponding representation in text. You
-      will be presented either a braille symbol, or its text equivalent. You can click on it, to 'flip' and see the
-      corresponding alternative representation. If you already knew that pairing, click the ✅, otherwise click the ❌.
-      You will then be presented a new symbol or text representation. The app will remember which ones you got right and
-      which ones you got wrong. Over time you will be presented with the ones you get wrong more often, until gradually
-      you learn them all.</p>
-  </details>
-</body>
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("serviceWorker.js");
-  }
-</script>
-<script src="index.js"></script>
-
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+		/>
+		<title>Learn Braille</title>
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body class="column-flow">
+		<h1>Learn Braille</h1>
+		<main>
+			<section>
+				<p id="test" class="card"></p>
+			</section>
+			<button id="A"></button>
+			<button id="B"></button>
+			<button id="C"></button>
+			<button id="D"></button>
+		</main>
+		<span id="previousResult"></span>
+		<table>
+			<thead>
+				<tr>
+					<th>ready</th>
+					<th>box1</th>
+					<th>box2</th>
+					<th>box3</th>
+					<th>box4</th>
+					<th>box5</th>
+					<th>box6</th>
+					<th>box7</th>
+					<th>retired</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td id="ready"></td>
+					<td id="box1"></td>
+					<td id="box2"></td>
+					<td id="box3"></td>
+					<td id="box4"></td>
+					<td id="box5"></td>
+					<td id="box6"></td>
+					<td id="box7"></td>
+					<td id="retired"></td>
+				</tr>
+			</tbody>
+		</table>
+		<details>
+			<summary>What is this?</summary>
+			<p>
+				This app will teach you English Braille. Every braille symbol
+				has a corresponding representation in text. You will be
+				presented either a braille symbol, and four possible answers.
+				Click on the correct answer to proceed. You will then be
+				presented a new symbol or text representation. The app will
+				remember which ones you got right and which ones you got
+				wrong. Over time you will be presented with the ones you get
+				wrong more often, until gradually you learn them all.
+			</p>
+		</details>
+	</body>
+	<script>
+		if ("serviceWorker" in navigator) {
+			navigator.serviceWorker.register("serviceWorker.js");
+		}
+	</script>
+	<script src="index.js"></script>
 </html>

@@ -53,6 +53,8 @@ button {
 	min-width: 6rem;
 	min-height: 6rem;
 	text-align: center;
+	border: 1px solid var(--hard);
+	width: 2rem;
 }
 
 /* Block */
