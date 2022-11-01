@@ -5,9 +5,8 @@ const config: Config = {
 	collectCoverage: true,
 	collectCoverageFrom: ["**/src/**"],
 	coveragePathIgnorePatterns: [
-		// These two files form the imperative shell, which will not be tested
+		// This file forms the imperative shell, which will not be tested
 		"src/index.ts",
-		"src/service_worker.ts",
 	],
 	coverageThreshold: {
 		global: {

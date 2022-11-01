@@ -75,6 +75,7 @@ const positiveFeedback = [
 	"YESSSS",
 	"Well done!",
 	"Got it right!",
+	"Brailliant!",
 ];
 
 const pickRandom = <T>(items: T[]): T =>
