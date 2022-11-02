@@ -64,5 +64,10 @@
 			</p>
 		</details>
 	</body>
+	<script>
+		if ("serviceWorker" in navigator) {
+			navigator.serviceWorker.register("serviceWorker.js");
+		}
+	</script>
 	<script src="index.js"></script>
 </html>
