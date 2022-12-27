@@ -1,5 +1,5 @@
 import { getBoxKey } from "./boxSequencer";
-import { shuffle } from "./utils";
+import { pickRandomFrom, shuffle } from "./utils";
 
 const moveCard = (
 	state: GameState,
@@ -105,8 +105,7 @@ const advanceState = (state: GameState): GameState => {
 
 	const box = advancedState[getBoxKey(advancedState.step)];
 
-	const randomIndex = Math.floor(box.length * Math.random());
-	const cardToTest = box[randomIndex];
+	const cardToTest = pickRandomFrom(box);
 
 	return {
 		...advancedState,

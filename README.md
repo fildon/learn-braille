@@ -33,5 +33,3 @@ This project enforces a 100% test coverage policy, with concessions made for the
 - Sharing preview images
 - Favicon
 - More state surfaced in UI
-  - e.g. count in each box currently?
-- More than just letters to add to the deck

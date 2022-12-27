@@ -5,7 +5,7 @@ import {
 	stringToState,
 } from "./persistence";
 import { markCardCorrect, markCardIncorrect } from "./stateMachine";
-import { pickRandom, shuffle } from "./utils";
+import { pickRandomFrom, shuffle } from "./utils";
 
 // As noted in `jest.config.ts` this file is the 'imperative shell'
 // As such it will not be checked. Therefore it should have
@@ -26,6 +26,7 @@ const box5 = document.querySelector("#box5")!;
 const box6 = document.querySelector("#box6")!;
 const box7 = document.querySelector("#box7")!;
 const retired = document.querySelector("#retired")!;
+const streakDisplay = document.querySelector("#currentStreak")!;
 
 let state: GameState;
 try {
@@ -34,6 +35,7 @@ try {
 	state = createInitialState();
 }
 let answers: { text: string; isCorrect: boolean }[] = [];
+let streakCount = 0;
 
 const updateUI = () => {
 	answers = shuffle([
@@ -57,6 +59,7 @@ const updateUI = () => {
 	box6.textContent = state.box6.length.toString();
 	box7.textContent = state.box7.length.toString();
 	retired.textContent = state.retired.length.toString();
+	streakDisplay.textContent = `Current streak: ${streakCount.toString()}`;
 };
 
 updateUI();
@@ -79,10 +82,12 @@ const positiveFeedback = [
 	answer.addEventListener("click", () => {
 		// If this was correct?
 		if (answers[i].isCorrect) {
-			previousResult.textContent = pickRandom(positiveFeedback);
+			previousResult.textContent = pickRandomFrom(positiveFeedback);
+			streakCount++;
 			state = markCardCorrect(state);
 		} else {
 			previousResult.textContent = `Naw. ${state.currentCard.front} is actually ${state.currentCard.back}`;
+			streakCount = 0;
 			state = markCardIncorrect(state);
 		}
 		// Persist
