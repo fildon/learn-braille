@@ -1,3 +1,5 @@
+import { shuffle } from "./utils";
+
 /**
  * This is the type we read/write to/from storage
  *
@@ -36,7 +38,7 @@ const isSerializedGameState = (
 	unknown: unknown
 ): unknown is SerializeableState =>
 	isObj(unknown) &&
-	unknown["version"] === "2" &&
+	unknown["version"] === "3" &&
 	typeof unknown["step"] === "number" &&
 	!Number.isNaN(unknown["step"]) &&
 	isBox(unknown["cards"]);
@@ -129,22 +131,76 @@ const initialCards: Array<Card> = [
 	{ id: "24", front: "⠭", back: "X", learningState: "ready" },
 	{ id: "25", front: "⠽", back: "Y", learningState: "ready" },
 	{ id: "26", front: "⠵", back: "Z", learningState: "ready" },
+	{ id: "27", front: "⠂", back: ",", learningState: "ready" },
+	{ id: "28", front: "⠆", back: ";", learningState: "ready" },
+	{ id: "29", front: "⠒", back: ":", learningState: "ready" },
+	{
+		id: "30",
+		front: "⠲",
+		back: ". (period)",
+		learningState: "ready",
+	},
+	{
+		id: "31",
+		front: "⠨",
+		back: ". (decimal)",
+		learningState: "ready",
+	},
+	{
+		id: "32",
+		front: "⠖",
+		back: "!",
+		learningState: "ready",
+	},
+	{
+		id: "33",
+		front: "⠯",
+		back: "&",
+		learningState: "ready",
+	},
+	{
+		id: "34",
+		front: "⠼",
+		back: "# (number mode)",
+		learningState: "ready",
+	},
+	{
+		id: "35",
+		front: "⠷",
+		back: "(",
+		learningState: "ready",
+	},
+	{
+		id: "36",
+		front: "⠾",
+		back: ")",
+		learningState: "ready",
+	},
+	{
+		id: "37",
+		front: "⠦",
+		back: "?",
+		learningState: "ready",
+	},
 ];
 
-export const initialState: GameState = {
-	version: "2",
-	step: 1,
-	currentCard: { ...initialCards[0], learningState: "box1" },
-	guesses: [initialCards[1], initialCards[2], initialCards[3]],
-	ready: initialCards.slice(5),
-	box1: initialCards
-		.slice(0, 5)
-		.map((card) => ({ ...card, learningState: "box1" })),
-	box2: [],
-	box3: [],
-	box4: [],
-	box5: [],
-	box6: [],
-	box7: [],
-	retired: [],
+export const createInitialState = (): GameState => {
+	const shuffledCards = shuffle(initialCards);
+	return {
+		version: "3",
+		step: 1,
+		currentCard: { ...shuffledCards[0], learningState: "box1" },
+		guesses: [shuffledCards[1], shuffledCards[2], shuffledCards[3]],
+		ready: shuffledCards.slice(5),
+		box1: shuffledCards
+			.slice(0, 5)
+			.map((card) => ({ ...card, learningState: "box1" })),
+		box2: [],
+		box3: [],
+		box4: [],
+		box5: [],
+		box6: [],
+		box7: [],
+		retired: [],
+	};
 };

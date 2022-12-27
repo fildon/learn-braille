@@ -1,14 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
-	initialState,
+	createInitialState,
 	stateToString,
 	stringToState,
 } from "./persistence";
-import {
-	markCardCorrect,
-	markCardIncorrect,
-	shuffle,
-} from "./stateMachine";
+import { markCardCorrect, markCardIncorrect } from "./stateMachine";
+import { pickRandom, shuffle } from "./utils";
 
 // As noted in `jest.config.ts` this file is the 'imperative shell'
 // As such it will not be checked. Therefore it should have
@@ -34,7 +31,7 @@ let state: GameState;
 try {
 	state = stringToState(window.localStorage.getItem("state") ?? "");
 } catch (_) {
-	state = initialState;
+	state = createInitialState();
 }
 let answers: { text: string; isCorrect: boolean }[] = [];
 
@@ -77,9 +74,6 @@ const positiveFeedback = [
 	"Got it right!",
 	"Brailliant!",
 ];
-
-const pickRandom = <T>(items: T[]): T =>
-	items[Math.floor(Math.random() * items.length)];
 
 [answerA, answerB, answerC, answerD].forEach((answer, i) =>
 	answer.addEventListener("click", () => {

@@ -1,7 +1,8 @@
-import { initialState } from "./persistence";
+import { createInitialState } from "./persistence";
 import { markCardCorrect, markCardIncorrect } from "./stateMachine";
 
 test("markCardCorrect updates currentCard", () => {
+	const initialState = createInitialState();
 	const updated = markCardCorrect(initialState);
 
 	expect(updated.currentCard.id).not.toBe(
@@ -18,7 +19,7 @@ test("markCardCorrect pulls in ready cards", () => {
 		learningState: "box2",
 	};
 	const stateThatNeedsToPull: GameState = {
-		version: "2",
+		version: "3",
 		step: 1,
 		currentCard: mockCardInCurrent,
 		guesses: [
@@ -67,7 +68,7 @@ test("markCardCorrect returns a random retired card if there are no others", () 
 		learningState: "retired",
 	};
 	const mockInitialState: GameState = {
-		version: "2",
+		version: "3",
 		step: 1,
 		currentCard: mockCardA,
 		guesses: [mockCardA, mockCardA, mockCardA],
@@ -107,7 +108,7 @@ test("markCardCorrect does not add ready cards if box2 has members", () => {
 		learningState: "box2",
 	};
 	const mockInitialState: GameState = {
-		version: "2",
+		version: "3",
 		step: 1,
 		currentCard: mockCardA,
 		guesses: [mockCardA, mockCardA, mockCardA],
@@ -141,7 +142,7 @@ test("markCardCorrect will not pull in ready cards if there are none", () => {
 		learningState: "box5",
 	};
 	const mockInitialState: GameState = {
-		version: "2",
+		version: "3",
 		step: 1,
 		currentCard: mockCardA,
 		guesses: [mockCardA, mockCardA, mockCardA],
@@ -175,7 +176,7 @@ test("markCardIncorrect moves the card to box1", () => {
 		learningState: "box5",
 	};
 	const mockInitialState: GameState = {
-		version: "2",
+		version: "3",
 		step: 1,
 		currentCard: mockCardA,
 		guesses: [mockCardA, mockCardA, mockCardA],

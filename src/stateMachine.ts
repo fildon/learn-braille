@@ -1,4 +1,5 @@
 import { getBoxKey } from "./boxSequencer";
+import { shuffle } from "./utils";
 
 const moveCard = (
 	state: GameState,
@@ -17,12 +18,6 @@ const moveCard = (
 		[target]: [...state[target], { ...card, learningState: target }],
 	};
 };
-
-export const shuffle = <T>(items: T[]) =>
-	items
-		.map((item) => ({ item, rank: Math.random() }))
-		.sort((a, b) => a.rank - b.rank)
-		.map(({ item }) => item);
 
 const pullInReadyCardsIfNeeded = (state: GameState): GameState => {
 	if (state.box1.length > 0) return state;
@@ -98,11 +93,9 @@ const advanceState = (state: GameState): GameState => {
 	// Special case, if every card is in 'retired'
 	// Then we just have to return a random other retired card
 	if (onlyRetiredHasCards(state)) {
-		const randomRetired = state.retired
-			.filter(({ id }) => id !== state.currentCard.id)
-			.map((card) => ({ card, rank: Math.random() }))
-			.sort((a, b) => a.rank - b.rank)
-			.map(({ card }) => card)[0];
+		const randomRetired = shuffle(
+			state.retired.filter(({ id }) => id !== state.currentCard.id)
+		)[0];
 		return { ...state, currentCard: randomRetired };
 	}
 

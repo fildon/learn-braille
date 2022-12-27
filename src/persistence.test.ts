@@ -2,7 +2,7 @@ import { stringToState, stateToString } from "./persistence";
 
 test("stateToString and stringToState preserve state", () => {
 	const mockState: GameState = {
-		version: "2",
+		version: "3",
 		step: 1,
 		currentCard: {
 			id: "1",
