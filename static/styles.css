@@ -10,6 +10,10 @@
 	box-sizing: border-box;
 	text-align: center;
 }
+body {
+	background-color: var(--soft);
+	color: var(--hard);
+}
 details summary {
 	border: dashed var(--hard);
 	padding: 1rem;
@@ -48,13 +52,10 @@ button {
 	margin-right: auto;
 	margin-top: 1rem;
 	margin-bottom: 1rem;
-	padding: 1rem;
 	font-size: 3rem;
-	min-width: 6rem;
-	min-height: 6rem;
-	text-align: center;
 	border: 1px solid var(--hard);
-	width: 2rem;
+	width: fit-content;
+	height: fit-content;
 }
 
 /* Block */
